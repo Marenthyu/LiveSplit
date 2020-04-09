@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>LiveSplit</RootNamespace>
     <AssemblyName>LiveSplit.View</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>Svn</SccProjectName>
     <SccLocalPath>Svn</SccLocalPath>
@@ -93,8 +93,6 @@
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="Streaming\BroadcasterPlugin.cs" />
-    <Compile Include="Streaming\TimedBroadcasterPlugin.cs" />
     <Compile Include="UI\ListBoxItemDragger.cs" />
     <Compile Include="UI\LayoutFactories\StandardLayoutFactory.cs" />
     <Compile Include="UI\LayoutFactories\TimerOnlyLayoutFactory.cs" />

@@ -15,6 +15,7 @@ using LiveSplit.UI.LayoutFactories;
 using LiveSplit.UI.LayoutSavers;
 using LiveSplit.Updates;
 using LiveSplit.Utils;
+using LiveSplit.Web;
 using LiveSplit.Web.Share;
 using LiveSplit.Web.SRL;
 using Microsoft.WindowsAPICodePack.Taskbar;
@@ -35,9 +36,6 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
 using UpdateManager;
-#if WITH_XSPLIT
-using XSplit.Wpf;
-#endif
 
 namespace LiveSplit.View
 {
@@ -107,14 +105,6 @@ namespace LiveSplit.View
 
         public string BasePath { get; set; }
 
-        public Bitmap BackBuffer { get; set; }
-        public object BackBufferLock = new object();
-        public bool DrawToBackBuffer { get; set; }
-
-#if WITH_XSPLIT
-        public TimedBroadcasterPlugin XSplit { get; set; }
-#endif
-
         private bool MousePassThrough
         {
             set
@@ -176,12 +166,11 @@ namespace LiveSplit.View
         [DllImport("user32.dll")]
         private static extern IntPtr GetForegroundWindow();
 
-        public TimerForm(string splitsPath = null, string layoutPath = null, bool drawToBackBuffer = false, string basePath = "")
+        public TimerForm(string splitsPath = null, string layoutPath = null, string basePath = "")
         {
             BasePath = basePath;
             InitializeComponent();
             Init(splitsPath, layoutPath);
-            DrawToBackBuffer = drawToBackBuffer;
         }
 
         private void Init(string splitsPath = null, string layoutPath = null)
@@ -307,31 +296,11 @@ namespace LiveSplit.View
             InvalidationRequired = false;
 
             Hook = new CompositeHook();
+            Hook.GamepadHookInitialized += Hook_GamepadHookInitialized;
             Hook.KeyOrButtonPressed += hook_KeyOrButtonPressed;
             Settings.RegisterHotkeys(Hook, CurrentState.CurrentHotkeyProfile);
 
             SizeChanged += TimerForm_SizeChanged;
-
-            lock (BackBufferLock)
-            {
-                BackBuffer = new Bitmap(Width, Height);
-#if WITH_XSPLIT
-                /*try
-                {
-                    // Outputs a CosmoWright image every 50ms (20 FPS)
-                    XSplit = TimedBroadcasterPlugin.CreateInstance(
-                        "livesplit", BackBuffer, 50);
-
-                    if (this.XSplit != null)
-                    {
-                        // The correct version of XSplit was installed (unless they use OBS), so we can start our output.
-                        this.XSplit.StartTimer();
-                    }
-                }
-                catch
-                { }*/
-#endif
-            }
 
             TopMost = Layout.Settings.AlwaysOnTop;
             BackColor = Color.Black;
@@ -382,6 +351,13 @@ namespace LiveSplit.View
             RefreshComparisonItems();
         }
 
+        private string GetShortenedGameAndGoal(string goal)
+        {
+            if (goal.Length > 65)
+                return goal.Substring(0, 60) + "...";
+            return goal;
+        }
+
         void SRL_RacesRefreshed(object sender, EventArgs e)
         {
             Action<ToolStripItem> addItem = null;
@@ -416,11 +392,10 @@ namespace LiveSplit.View
                 if (race.state != 1)
                     continue;
 
-                var game = race.game.name;
-                var goal = race.goal;
+                var gameAndGoal = GetShortenedGameAndGoal(string.Format("{0} - {1}", race.game.name, race.goal));
                 var entrants = race.numentrants;
                 var plural = entrants == 1 ? "" : "s";
-                var title = string.Format("{0} - {1} ({2} Entrant{3})", game, goal, entrants, plural) as string;
+                var title = string.Format("{0} ({1} Entrant{2})", gameAndGoal, entrants, plural) as string;
                 var item = new ToolStripMenuItem();
                 item.Text = title.EscapeMenuItemText();
                 item.Tag = race.id;
@@ -438,8 +413,7 @@ namespace LiveSplit.View
                 if (race.state != 3)
                     continue;
 
-                var game = race.game.name;
-                var goal = race.goal;
+                var gameAndGoal = GetShortenedGameAndGoal(string.Format("{0} - {1}", race.game.name, race.goal));
                 var entrants = race.numentrants;
                 var startTime = new DateTime(1970, 1, 1, 0, 0, 0, 0);
                 startTime = startTime.AddSeconds(race.time);
@@ -478,7 +452,7 @@ namespace LiveSplit.View
                                 if (timeSpan < TimeSpan.Zero)
                                     timeSpan = TimeSpan.Zero;
                                 var time = new RegularTimeFormatter().Format(timeSpan);
-                                var title = string.Format("[{0}] {1} - {2} ({3} / {4} Finished)", time, game, goal, finishedCount, entrants - forfeitedCount) as string;
+                                var title = string.Format("[{0}] {1} ({2}/{3} Finished)", time, gameAndGoal, finishedCount, entrants - forfeitedCount) as string;
                                 tsItem.Text = title.EscapeMenuItemText();
                             }
                             catch { }
@@ -496,7 +470,7 @@ namespace LiveSplit.View
                 tsItem.Click += (s, ev) =>
                     {
                         ShareSettings.Default.Reload();
-                        var username = ShareSettings.Default.SRLIRCUsername;
+                        var username = WebCredentials.SpeedRunsLiveIRCCredentials.Username;
                         var racers = ((IEnumerable<string>)race.entrants.Properties.Keys).Select(x => x.ToLower());
                         if (!racers.Contains((username ?? "").ToLower()))
                             Settings.RaceViewer.ShowRace(race);
@@ -592,6 +566,11 @@ namespace LiveSplit.View
                 }
                 MaintainMinimumSize();
             }
+        }
+
+        private void Hook_GamepadHookInitialized(object sender, EventArgs e)
+        {
+            CheckForUpdates();
         }
 
         private void CheckForUpdates()
@@ -1066,15 +1045,6 @@ namespace LiveSplit.View
                         Model.SwitchComparisonNext();
                 }
 
-                if (ActiveForm == this && !ResetMessageShown && !IsInDialogMode)
-                {
-                    if (Settings.ScrollUp == e)
-                        Model.ScrollUp();
-
-                    else if (Settings.ScrollDown == e)
-                        Model.ScrollDown();
-                }
-
                 if (hotkeyProfile.ToggleGlobalHotkeys == e)
                 {
                     hotkeyProfile.GlobalHotkeysEnabled = !hotkeyProfile.GlobalHotkeysEnabled;
@@ -1302,33 +1272,9 @@ namespace LiveSplit.View
         {
             try
             {
-                if (DrawToBackBuffer)
-                {
-                    lock (BackBufferLock)
-                    {
-                        if (BackBuffer == null || BackBuffer.Size != Size)
-                            BackBuffer = new Bitmap(Width, Height);
-                        var graphics = Graphics.FromImage(BackBuffer);
-
-                        graphics.CompositingMode = CompositingMode.SourceCopy;
-                        graphics.FillRectangle(Brushes.Transparent, 0, 0, BackBuffer.Width, BackBuffer.Height);
-                        graphics.CompositingMode = CompositingMode.SourceOver;
-
-                        graphics.Clip = new Region();
-                        PaintForm(graphics, graphics.Clip);
-
-                        var graphicsForm = e.Graphics;
-                        graphicsForm.CompositingQuality = CompositingQuality.GammaCorrected;
-
-                        graphicsForm.DrawImage(BackBuffer, 0, 0);
-                    }
-                }
-                else
-                {
-                    var clip = e.Graphics.Clip;
-                    e.Graphics.Clip = new Region();
-                    PaintForm(e.Graphics, clip);
-                }
+                var clip = e.Graphics.Clip;
+                e.Graphics.Clip = new Region();
+                PaintForm(e.Graphics, clip);
             }
             catch (Exception ex)
             {
@@ -1461,6 +1407,17 @@ namespace LiveSplit.View
             {
                 RightClickMenu.Show(this, e.Location);
                 MouseIsDown = false;
+            }
+        }
+
+        private void TimerForm_MouseWheel(object sender, MouseEventArgs e)
+        {
+            if (e.Delta > 0)
+            {
+                Model.ScrollUp();
+            } else if (e.Delta < 0)
+            {
+                Model.ScrollDown();
             }
         }
 
@@ -1768,7 +1725,7 @@ namespace LiveSplit.View
             }
         }
 
-        private void SaveSplitsAs(bool promptPBMessage)
+        private bool SaveSplitsAs(bool promptPBMessage)
         {
             using (var splitDialog = new SaveFileDialog())
             {
@@ -1781,8 +1738,9 @@ namespace LiveSplit.View
                     if (result == DialogResult.OK)
                     {
                         CurrentState.Run.FilePath = splitDialog.FileName;
-                        SaveSplits(promptPBMessage);
+                        return SaveSplits(promptPBMessage);
                     }
+                    return false;
                 }
                 finally
                 {
@@ -1791,21 +1749,17 @@ namespace LiveSplit.View
             }
         }
 
-        private void SaveSplits(bool promptPBMessage)
+        private bool SaveSplits(bool promptPBMessage)
         {
             var savePath = CurrentState.Run.FilePath;
 
             if (savePath == null)
             {
-                SaveSplitsAs(promptPBMessage);
-                return;
+                return SaveSplitsAs(promptPBMessage);
             }
 
             CurrentState.Run.FixSplits();
 
-            var stateCopy = CurrentState.Clone() as LiveSplitState;
-            var modelCopy = new TimerModel();
-            modelCopy.CurrentState = stateCopy;
             var result = DialogResult.No;
 
             if (promptPBMessage && ((CurrentState.CurrentPhase == TimerPhase.Ended
@@ -1819,21 +1773,20 @@ namespace LiveSplit.View
                 DontRedraw = false;
                 if (result == DialogResult.Yes)
                 {
-                    Model.Reset();
-                    modelCopy.SetRunAsPB();
-                    modelCopy.UpdateAttemptHistory();
-                    modelCopy.UpdateBestSegments();
-                    modelCopy.UpdateSegmentHistory();
-                    SetRun(stateCopy.Run);
+                    Model.ResetAndSetAttemptAsPB();
                 }
                 else if (result == DialogResult.Cancel)
-                    return;
+                    return false;
             }
 
-            if (result == DialogResult.Yes)
-                modelCopy.Reset(false);
-            else
+            var stateCopy = CurrentState;
+            if (result == DialogResult.No)
+            {
+                var modelCopy = new TimerModel();
+                stateCopy = CurrentState.Clone() as LiveSplitState;
+                modelCopy.CurrentState = stateCopy;
                 modelCopy.Reset();
+            }
 
             try
             {
@@ -1859,10 +1812,12 @@ namespace LiveSplit.View
             {
                 MessageBox.Show(this, "Splits could not be saved!", "Save Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Log.Error(ex);
+                return false;
             }
+            return true;
         }
 
-        private void SaveLayout()
+        private bool SaveLayout()
         {
             var savePath = Layout.FilePath;
             if (Layout.Mode == LayoutMode.Vertical)
@@ -1880,8 +1835,7 @@ namespace LiveSplit.View
 
             if (savePath == null)
             {
-                SaveLayoutAs();
-                return;
+                return SaveLayoutAs();
             }
 
             try
@@ -1908,7 +1862,9 @@ namespace LiveSplit.View
             {
                 MessageBox.Show(this, "Layout could not be saved!", "Save Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Log.Error(ex);
+                return false;
             }
+            return true;
         }
 
         private void EditSplits()
@@ -2102,7 +2058,7 @@ namespace LiveSplit.View
             SetLayout(Layout);
         }
 
-        private void SaveLayoutAs()
+        private bool SaveLayoutAs()
         {
             using (var layoutDialog = new SaveFileDialog())
             {
@@ -2114,8 +2070,9 @@ namespace LiveSplit.View
                     if (result == DialogResult.OK)
                     {
                         Layout.FilePath = layoutDialog.FileName;
-                        SaveLayout();
+                        return SaveLayout();
                     }
+                    return false;
                 }
                 finally
                 {
@@ -2123,6 +2080,7 @@ namespace LiveSplit.View
                 }
             }
         }
+
         private void OpenAboutBox()
         {
             using (var aboutBox = new AboutBox())
@@ -2197,40 +2155,37 @@ namespace LiveSplit.View
 
         private void SetLayout(ILayout layout)
         {
-            lock (BackBufferLock)
+            if (Layout != null && Layout != layout)
             {
-                if (Layout != null && Layout != layout)
-                {
-                    if (Layout.Settings.BackgroundImage != null && Layout.Settings.BackgroundImage != layout.Settings.BackgroundImage)
-                        Layout.Settings.BackgroundImage.Dispose();
+                if (Layout.Settings.BackgroundImage != null && Layout.Settings.BackgroundImage != layout.Settings.BackgroundImage)
+                    Layout.Settings.BackgroundImage.Dispose();
 
-                    foreach (var component in Layout.Components.Except(layout.Components))
-                        component.Dispose();
+                foreach (var component in Layout.Components.Except(layout.Components))
+                    component.Dispose();
 
-                    foreach (var component in layout.Components.Except(Layout.Components).OfType<IDeactivatableComponent>())
-                        component.Activated = true;
-                }
-                Layout = layout;
-                ComponentRenderer.VisibleComponents = Layout.Components;
-                CurrentState.LayoutSettings = layout.Settings;
-                UpdateRefreshesRemaining();
-                MinimumSize = new Size(0, 0);
-                if (Layout.Mode == LayoutMode.Vertical)
-                {
-                    if (Layout.VerticalWidth != UI.Layout.InvalidSize && Layout.VerticalHeight != UI.Layout.InvalidSize)
-                        Size = new Size(Layout.VerticalWidth, Layout.VerticalHeight);
-                }
-                else
-                {
-                    if (Layout.HorizontalWidth != UI.Layout.InvalidSize && Layout.HorizontalHeight != UI.Layout.InvalidSize)
-                        Size = new Size(Layout.HorizontalWidth, Layout.HorizontalHeight);
-                }
-                var x = Math.Max(SystemInformation.VirtualScreen.X, Math.Min(Layout.X, SystemInformation.VirtualScreen.X + SystemInformation.VirtualScreen.Width - Width));
-                var y = Math.Max(SystemInformation.VirtualScreen.Y, Math.Min(Layout.Y, SystemInformation.VirtualScreen.Y + SystemInformation.VirtualScreen.Height - Height));
-                Location = new Point(x, y);
-                TopMost = Layout.Settings.AlwaysOnTop;
-                SetInTimerOnlyMode();
+                foreach (var component in layout.Components.Except(Layout.Components).OfType<IDeactivatableComponent>())
+                    component.Activated = true;
             }
+            Layout = layout;
+            ComponentRenderer.VisibleComponents = Layout.Components;
+            CurrentState.LayoutSettings = layout.Settings;
+            UpdateRefreshesRemaining();
+            MinimumSize = new Size(0, 0);
+            if (Layout.Mode == LayoutMode.Vertical)
+            {
+                if (Layout.VerticalWidth != UI.Layout.InvalidSize && Layout.VerticalHeight != UI.Layout.InvalidSize)
+                    Size = new Size(Layout.VerticalWidth, Layout.VerticalHeight);
+            }
+            else
+            {
+                if (Layout.HorizontalWidth != UI.Layout.InvalidSize && Layout.HorizontalHeight != UI.Layout.InvalidSize)
+                    Size = new Size(Layout.HorizontalWidth, Layout.HorizontalHeight);
+            }
+            var x = Math.Max(SystemInformation.VirtualScreen.X, Math.Min(Layout.X, SystemInformation.VirtualScreen.X + SystemInformation.VirtualScreen.Width - Width));
+            var y = Math.Max(SystemInformation.VirtualScreen.Y, Math.Min(Layout.Y, SystemInformation.VirtualScreen.Y + SystemInformation.VirtualScreen.Height - Height));
+            Location = new Point(x, y);
+            TopMost = Layout.Settings.AlwaysOnTop;
+            SetInTimerOnlyMode();
         }
 
         private void CloseSplits()
@@ -2318,6 +2273,7 @@ namespace LiveSplit.View
                 return true;
             }
 
+            bool safeToContinue = true;
             if (CurrentState.Run.HasChanged)
             {
                 try
@@ -2326,7 +2282,7 @@ namespace LiveSplit.View
                     var result = MessageBox.Show(this, "Your splits have been updated but not yet saved.\nDo you want to save your splits now?", "Save Splits?", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
                     if (result == DialogResult.Yes)
                     {
-                        SaveSplits(false);
+                        safeToContinue = SaveSplits(false);
                     }
                     else if (result == DialogResult.Cancel)
                     {
@@ -2338,12 +2294,16 @@ namespace LiveSplit.View
                     DontRedraw = false;
                 }
             }
-            Model.Reset();
-            return true;
+            if (safeToContinue)
+            {
+                Model.Reset();
+            }
+            return safeToContinue;
         }
 
         private bool WarnUserAboutLayoutSave(bool canCancel)
         {
+            bool safeToContinue = true;
             if (Layout.HasChanged)
             {
                 try
@@ -2353,7 +2313,7 @@ namespace LiveSplit.View
                     var result = MessageBox.Show(this, "Your layout has been updated but not yet saved.\nDo you want to save your layout now?", "Save Layout?", buttons, MessageBoxIcon.Question);
                     if (result == DialogResult.Yes)
                     {
-                        SaveLayout();
+                        safeToContinue = SaveLayout();
                     }
                     else if (result == DialogResult.Cancel)
                     {
@@ -2365,7 +2325,7 @@ namespace LiveSplit.View
                     DontRedraw = false;
                 }
             }
-            return true;
+            return safeToContinue;
         }
 
         private void TimerForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -2465,11 +2425,6 @@ namespace LiveSplit.View
             }
         }
 
-        private void TimerForm_Load(object sender, EventArgs e)
-        {
-            CheckForUpdates();
-        }
-
         private void closeSplitsMenuItem_Click(object sender, EventArgs e)
         {
             CloseSplits();
@@ -2497,7 +2452,7 @@ namespace LiveSplit.View
             var graphics = Graphics.FromImage(image);
 
             graphics.CompositingMode = CompositingMode.SourceCopy;
-            graphics.FillRectangle(Brushes.Transparent, 0, 0, BackBuffer.Width, BackBuffer.Height);
+            graphics.FillRectangle(Brushes.Transparent, 0, 0, Width, Height);
             graphics.CompositingMode = CompositingMode.SourceOver;
 
             if (!transparent)
@@ -2506,7 +2461,9 @@ namespace LiveSplit.View
                 graphics.FillRectangle(new SolidBrush(Layout.Settings.BackgroundColor), 0, 0, Width, Height);
             }
 
-            PaintForm(graphics, new Region(new Rectangle(0, 0, Width, Height)));
+            var drawRegion = new Region(new Rectangle(0, 0, Width, Height));
+            UpdateRegion = drawRegion;
+            PaintForm(graphics, drawRegion);
 
             return image;
         }

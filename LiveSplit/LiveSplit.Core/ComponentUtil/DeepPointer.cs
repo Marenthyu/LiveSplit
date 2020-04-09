@@ -14,9 +14,20 @@ namespace LiveSplit.ComponentUtil
 
     public class DeepPointer
     {
-        private List<OffsetT> _offsets;
+        private IntPtr _absoluteBase;
+        private bool _usingAbsoluteBase;
+
         private OffsetT _base;
+        private List<OffsetT> _offsets;
         private string _module;
+        
+        public DeepPointer(IntPtr absoluteBase, params OffsetT[] offsets)
+        {
+            _absoluteBase = absoluteBase;
+            _usingAbsoluteBase = true;
+
+            InitializeOffsets(offsets);
+        }
 
         public DeepPointer(string module, OffsetT base_, params OffsetT[] offsets)
             : this(base_, offsets)
@@ -27,9 +38,7 @@ namespace LiveSplit.ComponentUtil
         public DeepPointer(OffsetT base_, params OffsetT[] offsets)
         {
             _base = base_;
-            _offsets = new List<OffsetT>();
-            _offsets.Add(0); // deref base first
-            _offsets.AddRange(offsets);
+            InitializeOffsets(offsets);
         }
 
         public T Deref<T>(Process process, T default_ = default(T)) where T : struct // all value types including structs
@@ -139,11 +148,14 @@ namespace LiveSplit.ComponentUtil
 
                 ptr = module.BaseAddress + _base;
             }
+            else if (_usingAbsoluteBase)
+            {
+                ptr = _absoluteBase;
+            }
             else
             {
                 ptr = process.MainModuleWow64Safe().BaseAddress + _base;
             }
-
 
             for (int i = 0; i < _offsets.Count - 1; i++)
             {
@@ -154,8 +166,15 @@ namespace LiveSplit.ComponentUtil
                 }
             }
 
-            ptr += _offsets[_offsets.Count - 1];
+            ptr = ptr + _offsets[_offsets.Count - 1];
             return true;
+        }
+
+        private void InitializeOffsets(params OffsetT[] offsets)
+        {
+            _offsets = new List<OffsetT>();
+            _offsets.Add(0); // deref base first
+            _offsets.AddRange(offsets);
         }
     }
 

@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>LiveSplit</RootNamespace>
     <AssemblyName>LiveSplit.Core</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>Svn</SccProjectName>
     <SccLocalPath>Svn</SccLocalPath>
@@ -161,6 +161,8 @@
     <Compile Include="Server\ScriptFactory.cs" />
     <Compile Include="Server\CommandServer.cs" />
     <Compile Include="TimeFormatters\AutomaticPrecisionTimeFormatter.cs" />
+    <Compile Include="TimeFormatters\NullFormat.cs" />
+    <Compile Include="TimeFormatters\GeneralTimeFormatter.cs" />
     <Compile Include="TimeFormatters\PossibleTimeSaveFormatter.cs" />
     <Compile Include="TimeFormatters\TimeFormat.cs" />
     <Compile Include="TimeFormatters\TimeAccuracy.cs" />
@@ -177,6 +179,7 @@
     <Compile Include="UI\GraphicsCache.cs" />
     <Compile Include="UI\ImageBlur.cs" />
     <Compile Include="UI\IInvalidator.cs" />
+    <Compile Include="UI\ImageExtensions.cs" />
     <Compile Include="UI\InputBox.cs" />
     <Compile Include="UI\Invalidator.cs" />
     <Compile Include="UI\SettingsHelper.cs" />
@@ -200,6 +203,7 @@
     <Compile Include="Web\JSON.cs" />
     <Compile Include="Web\Share\ASUPTimeFormatter.cs" />
     <Compile Include="Web\Share\Congratsio.cs" />
+    <Compile Include="Web\CredentialManager.cs" />
     <Compile Include="Web\Share\Excel.cs" />
     <Compile Include="Web\Share\Gett.cs" />
     <Compile Include="Web\Share\Imgur.cs" />
@@ -295,6 +299,7 @@
     </Compile>
     <Compile Include="Web\Share\SplitsIO.cs" />
     <Compile Include="Web\Share\Twitter.cs" />
+    <Compile Include="Web\WebCredentials.cs" />
     <Compile Include="Web\SRL\RaceState.cs" />
     <Compile Include="Web\SRL\RaceViewers\IRaceViewer.cs" />
     <Compile Include="Web\SRL\RaceViewers\Kadgar.cs" />
@@ -366,7 +371,8 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>where git
+    <PreBuildEvent>mkdir $(ProjectDir)Updates\GitInfo\
+where git
 if %25ERRORLEVEL%25 == 0 (
 git describe --dirty --always --long --tags &gt; "$(ProjectDir)Updates\GitInfo\version.txt"
 git rev-parse --abbrev-ref HEAD &gt; "$(ProjectDir)Updates\GitInfo\branch.txt"

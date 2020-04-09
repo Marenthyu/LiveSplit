@@ -109,22 +109,21 @@ namespace LiveSplit.Model
         {
             if (CurrentState.CurrentPhase != TimerPhase.NotRunning)
             {
-                if (CurrentState.CurrentPhase != TimerPhase.Ended)
-                    CurrentState.AttemptEnded = TimeStamp.CurrentDateTime;
-                CurrentState.IsGameTimePaused = false;
-                CurrentState.LoadingTimes = TimeSpan.Zero;
-
-                if (updateSplits)
-                {
-                    UpdateAttemptHistory();
-                    UpdateBestSegments();
-                    UpdatePBSplits();
-                    UpdateSegmentHistory();
-                }
-
+                ResetState(updateSplits);
                 ResetSplits();
+            }
+        }
 
-                CurrentState.Run.FixSplits();
+        private void ResetState(bool updateTimes)
+        {
+            if (CurrentState.CurrentPhase != TimerPhase.Ended)
+                CurrentState.AttemptEnded = TimeStamp.CurrentDateTime;
+            CurrentState.IsGameTimePaused = false;
+            CurrentState.LoadingTimes = TimeSpan.Zero;
+
+            if (updateTimes)
+            {
+                UpdateTimes();
             }
         }
 
@@ -141,6 +140,8 @@ namespace LiveSplit.Model
             }
 
             OnReset?.Invoke(this, oldPhase);
+
+            CurrentState.Run.FixSplits();
         }
 
         public void Pause()
@@ -202,7 +203,7 @@ namespace LiveSplit.Model
             OnScrollDown?.Invoke(this, null);
         }
 
-        public void UpdateAttemptHistory()
+        private void UpdateAttemptHistory()
         {
             Time time = new Time();
             if (CurrentState.CurrentPhase == TimerPhase.Ended)
@@ -213,7 +214,7 @@ namespace LiveSplit.Model
             CurrentState.Run.AttemptHistory.Add(newAttempt);
         }
 
-        public void UpdateBestSegments()
+        private void UpdateBestSegments()
         {
             TimeSpan? currentSegmentRTA = TimeSpan.Zero;
             TimeSpan? previousSplitTimeRTA = TimeSpan.Zero;
@@ -240,14 +241,14 @@ namespace LiveSplit.Model
             }
         }
 
-        public void UpdatePBSplits()
+        private void UpdatePBSplits()
         {
             var curMethod = CurrentState.CurrentTimingMethod;
             if ((CurrentState.Run.Last().SplitTime[curMethod] != null && CurrentState.Run.Last().PersonalBestSplitTime[curMethod] == null) || CurrentState.Run.Last().SplitTime[curMethod] < CurrentState.Run.Last().PersonalBestSplitTime[curMethod])
                 SetRunAsPB();
         }
 
-        public void UpdateSegmentHistory()
+        private void UpdateSegmentHistory()
         {
             TimeSpan? splitTimeRTA = TimeSpan.Zero;
             TimeSpan? splitTimeGameTime = TimeSpan.Zero;
@@ -264,7 +265,25 @@ namespace LiveSplit.Model
             }
         }
 
-        public void SetRunAsPB()
+        public void UpdateTimes()
+        {
+            UpdateAttemptHistory();
+            UpdateBestSegments();
+            UpdatePBSplits();
+            UpdateSegmentHistory();
+        }
+
+        public void ResetAndSetAttemptAsPB()
+        {
+            if (CurrentState.CurrentPhase != TimerPhase.NotRunning)
+            {
+                ResetState(true);
+                SetRunAsPB();
+                ResetSplits();
+            }
+        }
+
+        private void SetRunAsPB()
         {
             CurrentState.Run.ImportSegmentHistory();
             CurrentState.Run.FixSplits();
