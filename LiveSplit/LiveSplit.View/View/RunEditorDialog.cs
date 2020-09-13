@@ -625,31 +625,30 @@ namespace LiveSplit.View
         {
             try
             {
-                using (var image = new Bitmap(fileName).ScaleIcon())
+                var image = Image.FromFile(fileName);
+
+                if (!multiEdit)
                 {
-                    if (!multiEdit)
+                    var oldImage = (Image)runGrid.Rows[rowIndex].Cells[ICONINDEX].Value;
+                    if (oldImage != null)
+                        ImagesToDispose.Add(oldImage);
+
+                    Run[rowIndex].Icon = image;
+                    runGrid.NotifyCurrentCellDirty(true);
+                }
+                else
+                {
+                    foreach (DataGridViewCell cell in runGrid.SelectedCells)
                     {
-                        var oldImage = (Image) runGrid.Rows[rowIndex].Cells[ICONINDEX].Value;
+                        if (cell.ColumnIndex != ICONINDEX)
+                            continue;
+
+                        var oldImage = (Image)cell.Value;
                         if (oldImage != null)
                             ImagesToDispose.Add(oldImage);
 
-                        Run[rowIndex].Icon = new Bitmap(image);
-                        runGrid.NotifyCurrentCellDirty(true);
-                    }
-                    else
-                    {
-                        foreach (DataGridViewCell cell in runGrid.SelectedCells)
-                        {
-                            if (cell.ColumnIndex != ICONINDEX)
-                                continue;
-
-                            var oldImage = (Image) cell.Value;
-                            if (oldImage != null)
-                                ImagesToDispose.Add(oldImage);
-
-                            Run[cell.RowIndex].Icon = new Bitmap(image);
-                            runGrid.UpdateCellValue(ICONINDEX, cell.RowIndex);
-                        }
+                        Run[cell.RowIndex].Icon = (Image)image.Clone();
+                        runGrid.UpdateCellValue(ICONINDEX, cell.RowIndex);
                     }
                 }
 
@@ -676,7 +675,7 @@ namespace LiveSplit.View
         private void SetGameIcon(Image icon)
         {
             ImagesToDispose.Add(GameIcon);
-            GameIcon = icon.ScaleIcon();
+            GameIcon = icon;
             picGameIcon.Image = GameIcon;
             removeIconToolStripMenuItem.Enabled = GameIcon != null;
         }
@@ -1050,6 +1049,7 @@ namespace LiveSplit.View
             RebuildComparisonColumns();
             IsInitialized = true;
             UpdateButtonsStatus();
+            cbxGameName.UpdateUI();
         }
 
         private void picGameIcon_MouseUp(object sender, MouseEventArgs e)
@@ -1608,6 +1608,7 @@ namespace LiveSplit.View
         private Form form;
         private SemaphoreSlim refreshDropDown;
         private string currentText = "";
+        private string previousText = "";
         private bool taskCanceled = false;
 
         public IList<string> MyAutoCompleteSource
@@ -1623,7 +1624,6 @@ namespace LiveSplit.View
             form = controlForm;
             form.FormClosed += Form_FormClosed;
             refreshDropDown = new SemaphoreSlim(0, 1);
-            UpdateUI();
         }
 
         private void Form_FormClosed(object sender, FormClosedEventArgs e)
@@ -1632,8 +1632,10 @@ namespace LiveSplit.View
             TryReleaseRefreshDropDown();
         }
 
-        private void UpdateUI()
+        public void UpdateUI()
         {
+            previousText = currentText;
+
             Task.Factory.StartNew(() =>
                 {
                     while (true)
@@ -1645,7 +1647,7 @@ namespace LiveSplit.View
                         var text = currentText;
                         var legalStrings = GetAllItemsForText(text);
 
-                        if (currentText == text)
+                        if (currentText == text && previousText != text)
                         {
                             if (text != "" && legalStrings.Count() > 0 && text != legalStrings.First())
                             {
@@ -1656,6 +1658,7 @@ namespace LiveSplit.View
                                         _box.Items.Add(str);
                                     DroppedDown = false;
                                     _dropDown.Show(this, new Point(0, Height));
+                                    previousText = text;
                                 });
 
                             }

@@ -30,7 +30,10 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SettingsDialog));
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.btnChooseRaceProvider = new System.Windows.Forms.Button();
             this.btnOK = new System.Windows.Forms.Button();
+            this.label5 = new System.Windows.Forms.Label();
+            this.btnLogOut = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.chkDeactivateForOtherPrograms = new System.Windows.Forms.CheckBox();
@@ -64,12 +67,12 @@
             this.btnCancel = new System.Windows.Forms.Button();
             this.cbxRaceViewer = new System.Windows.Forms.ComboBox();
             this.label11 = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
             this.btnChooseComparisons = new System.Windows.Forms.Button();
             this.chkSimpleSOB = new System.Windows.Forms.CheckBox();
             this.chkWarnOnReset = new System.Windows.Forms.CheckBox();
-            this.btnLogOut = new System.Windows.Forms.Button();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label12 = new System.Windows.Forms.Label();
+            this.chkAllowGamepads = new System.Windows.Forms.CheckBox();
             this.tableLayoutPanel1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -84,41 +87,80 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 26F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 55F));
-            this.tableLayoutPanel1.Controls.Add(this.btnOK, 0, 5);
-            this.tableLayoutPanel1.Controls.Add(this.label5, 0, 4);
-            this.tableLayoutPanel1.Controls.Add(this.btnLogOut, 1, 4);
+            this.tableLayoutPanel1.Controls.Add(this.btnChooseRaceProvider, 0, 3);
+            this.tableLayoutPanel1.Controls.Add(this.btnOK, 0, 6);
+            this.tableLayoutPanel1.Controls.Add(this.label5, 0, 5);
+            this.tableLayoutPanel1.Controls.Add(this.btnLogOut, 1, 5);
             this.tableLayoutPanel1.Controls.Add(this.groupBox1, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.btnCancel, 2, 5);
+            this.tableLayoutPanel1.Controls.Add(this.btnCancel, 2, 6);
             this.tableLayoutPanel1.Controls.Add(this.cbxRaceViewer, 1, 2);
             this.tableLayoutPanel1.Controls.Add(this.label11, 0, 2);
-            this.tableLayoutPanel1.Controls.Add(this.label12, 0, 3);
-            this.tableLayoutPanel1.Controls.Add(this.btnChooseComparisons, 1, 3);
+            this.tableLayoutPanel1.Controls.Add(this.label12, 0, 4);
+            this.tableLayoutPanel1.Controls.Add(this.label13, 0, 3);
+            this.tableLayoutPanel1.Controls.Add(this.btnChooseComparisons, 1, 4);
             this.tableLayoutPanel1.Controls.Add(this.chkSimpleSOB, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.chkWarnOnReset, 1, 1);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(7, 7);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 6;
+            this.tableLayoutPanel1.RowCount = 7;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(380, 543);
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(380, 601);
             this.tableLayoutPanel1.TabIndex = 0;
+            // 
+            // btnChooseRaceProvider
+            // 
+            this.btnChooseRaceProvider.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel1.SetColumnSpan(this.btnChooseRaceProvider, 3);
+            this.btnChooseRaceProvider.Location = new System.Drawing.Point(187, 488);
+            this.btnChooseRaceProvider.Name = "btnChooseRaceProvider";
+            this.btnChooseRaceProvider.Size = new System.Drawing.Size(190, 23);
+            this.btnChooseRaceProvider.TabIndex = 6;
+            this.btnChooseRaceProvider.Text = "Manage Racing Services...";
+            this.btnChooseRaceProvider.UseVisualStyleBackColor = true;
+            this.btnChooseRaceProvider.Click += new System.EventHandler(this.btnChooseRaceProvider_Click);
             // 
             // btnOK
             // 
             this.btnOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel1.SetColumnSpan(this.btnOK, 2);
-            this.btnOK.Location = new System.Drawing.Point(221, 517);
+            this.btnOK.Location = new System.Drawing.Point(221, 575);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(75, 23);
-            this.btnOK.TabIndex = 6;
+            this.btnOK.TabIndex = 0;
             this.btnOK.Text = "OK";
             this.btnOK.UseVisualStyleBackColor = true;
             this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
+            // 
+            // label5
+            // 
+            this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(3, 551);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(178, 13);
+            this.label5.TabIndex = 10;
+            this.label5.Text = "Saved Accounts:";
+            // 
+            // btnLogOut
+            // 
+            this.btnLogOut.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel1.SetColumnSpan(this.btnLogOut, 3);
+            this.btnLogOut.Location = new System.Drawing.Point(187, 546);
+            this.btnLogOut.Name = "btnLogOut";
+            this.btnLogOut.Size = new System.Drawing.Size(190, 23);
+            this.btnLogOut.TabIndex = 8;
+            this.btnLogOut.Text = "Log Out of All Accounts";
+            this.btnLogOut.UseVisualStyleBackColor = true;
+            this.btnLogOut.Click += new System.EventHandler(this.btnLogOut_Click);
             // 
             // groupBox1
             // 
@@ -127,8 +169,8 @@
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox1.Location = new System.Drawing.Point(3, 3);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(374, 392);
-            this.groupBox1.TabIndex = 0;
+            this.groupBox1.Size = new System.Drawing.Size(374, 421);
+            this.groupBox1.TabIndex = 2;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Hotkeys";
             // 
@@ -159,11 +201,13 @@
             this.tableLayoutPanel2.Controls.Add(this.txtSwitchNext, 1, 6);
             this.tableLayoutPanel2.Controls.Add(this.label10, 1, 9);
             this.tableLayoutPanel2.Controls.Add(this.txtDelay, 2, 9);
-            this.tableLayoutPanel2.Controls.Add(this.grpHotkeyProfiles, 0, 10);
+            this.tableLayoutPanel2.Controls.Add(this.grpHotkeyProfiles, 0, 11);
+            this.tableLayoutPanel2.Controls.Add(this.chkAllowGamepads, 0, 10);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 16);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.RowCount = 11;
+            this.tableLayoutPanel2.RowCount = 12;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
@@ -175,7 +219,8 @@
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 29F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 83F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(368, 373);
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(368, 402);
             this.tableLayoutPanel2.TabIndex = 0;
             // 
             // chkDeactivateForOtherPrograms
@@ -188,7 +233,7 @@
             this.chkDeactivateForOtherPrograms.Margin = new System.Windows.Forms.Padding(7, 3, 3, 3);
             this.chkDeactivateForOtherPrograms.Name = "chkDeactivateForOtherPrograms";
             this.chkDeactivateForOtherPrograms.Size = new System.Drawing.Size(172, 23);
-            this.chkDeactivateForOtherPrograms.TabIndex = 9;
+            this.chkDeactivateForOtherPrograms.TabIndex = 10;
             this.chkDeactivateForOtherPrograms.Text = "Deactivate For Other Programs";
             this.chkDeactivateForOtherPrograms.UseVisualStyleBackColor = true;
             // 
@@ -211,7 +256,7 @@
             this.chkGlobalHotkeys.Margin = new System.Windows.Forms.Padding(7, 3, 3, 3);
             this.chkGlobalHotkeys.Name = "chkGlobalHotkeys";
             this.chkGlobalHotkeys.Size = new System.Drawing.Size(98, 23);
-            this.chkGlobalHotkeys.TabIndex = 8;
+            this.chkGlobalHotkeys.TabIndex = 9;
             this.chkGlobalHotkeys.Text = "Global Hotkeys";
             this.chkGlobalHotkeys.UseVisualStyleBackColor = true;
             this.chkGlobalHotkeys.CheckedChanged += new System.EventHandler(this.chkGlobalHotkeys_CheckedChanged);
@@ -224,7 +269,7 @@
             this.chkDoubleTap.Margin = new System.Windows.Forms.Padding(7, 3, 3, 3);
             this.chkDoubleTap.Name = "chkDoubleTap";
             this.chkDoubleTap.Size = new System.Drawing.Size(168, 17);
-            this.chkDoubleTap.TabIndex = 10;
+            this.chkDoubleTap.TabIndex = 11;
             this.chkDoubleTap.Text = "Double Tap Prevention";
             this.chkDoubleTap.UseVisualStyleBackColor = true;
             // 
@@ -236,7 +281,7 @@
             this.txtStartSplit.Name = "txtStartSplit";
             this.txtStartSplit.ReadOnly = true;
             this.txtStartSplit.Size = new System.Drawing.Size(184, 20);
-            this.txtStartSplit.TabIndex = 0;
+            this.txtStartSplit.TabIndex = 1;
             this.txtStartSplit.Enter += new System.EventHandler(this.Split_Set_Enter);
             // 
             // label2
@@ -267,7 +312,7 @@
             this.txtReset.Name = "txtReset";
             this.txtReset.ReadOnly = true;
             this.txtReset.Size = new System.Drawing.Size(184, 20);
-            this.txtReset.TabIndex = 1;
+            this.txtReset.TabIndex = 2;
             this.txtReset.Enter += new System.EventHandler(this.Reset_Set_Enter);
             // 
             // txtPause
@@ -278,7 +323,7 @@
             this.txtPause.Name = "txtPause";
             this.txtPause.ReadOnly = true;
             this.txtPause.Size = new System.Drawing.Size(184, 20);
-            this.txtPause.TabIndex = 4;
+            this.txtPause.TabIndex = 5;
             this.txtPause.Enter += new System.EventHandler(this.Pause_Set_Enter);
             // 
             // label3
@@ -309,7 +354,7 @@
             this.txtSkip.Name = "txtSkip";
             this.txtSkip.ReadOnly = true;
             this.txtSkip.Size = new System.Drawing.Size(184, 20);
-            this.txtSkip.TabIndex = 3;
+            this.txtSkip.TabIndex = 4;
             this.txtSkip.Enter += new System.EventHandler(this.Skip_Set_Enter);
             // 
             // txtUndo
@@ -320,7 +365,7 @@
             this.txtUndo.Name = "txtUndo";
             this.txtUndo.ReadOnly = true;
             this.txtUndo.Size = new System.Drawing.Size(184, 20);
-            this.txtUndo.TabIndex = 2;
+            this.txtUndo.TabIndex = 3;
             this.txtUndo.Enter += new System.EventHandler(this.Undo_Set_Enter);
             // 
             // label7
@@ -341,7 +386,7 @@
             this.txtToggle.Name = "txtToggle";
             this.txtToggle.ReadOnly = true;
             this.txtToggle.Size = new System.Drawing.Size(184, 20);
-            this.txtToggle.TabIndex = 7;
+            this.txtToggle.TabIndex = 8;
             this.txtToggle.Enter += new System.EventHandler(this.Toggle_Set_Enter);
             // 
             // label8
@@ -372,7 +417,7 @@
             this.txtSwitchPrevious.Name = "txtSwitchPrevious";
             this.txtSwitchPrevious.ReadOnly = true;
             this.txtSwitchPrevious.Size = new System.Drawing.Size(184, 20);
-            this.txtSwitchPrevious.TabIndex = 5;
+            this.txtSwitchPrevious.TabIndex = 6;
             this.txtSwitchPrevious.Enter += new System.EventHandler(this.Switch_Previous_Set_Enter);
             // 
             // txtSwitchNext
@@ -383,7 +428,7 @@
             this.txtSwitchNext.Name = "txtSwitchNext";
             this.txtSwitchNext.ReadOnly = true;
             this.txtSwitchNext.Size = new System.Drawing.Size(184, 20);
-            this.txtSwitchNext.TabIndex = 6;
+            this.txtSwitchNext.TabIndex = 7;
             this.txtSwitchNext.Enter += new System.EventHandler(this.Switch_Next_Set_Enter);
             // 
             // label10
@@ -402,7 +447,7 @@
             this.txtDelay.Location = new System.Drawing.Point(315, 265);
             this.txtDelay.Name = "txtDelay";
             this.txtDelay.Size = new System.Drawing.Size(50, 20);
-            this.txtDelay.TabIndex = 11;
+            this.txtDelay.TabIndex = 12;
             this.txtDelay.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // grpHotkeyProfiles
@@ -410,10 +455,10 @@
             this.tableLayoutPanel2.SetColumnSpan(this.grpHotkeyProfiles, 3);
             this.grpHotkeyProfiles.Controls.Add(this.tableLayoutPanel3);
             this.grpHotkeyProfiles.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.grpHotkeyProfiles.Location = new System.Drawing.Point(3, 293);
+            this.grpHotkeyProfiles.Location = new System.Drawing.Point(3, 322);
             this.grpHotkeyProfiles.Name = "grpHotkeyProfiles";
             this.grpHotkeyProfiles.Size = new System.Drawing.Size(362, 77);
-            this.grpHotkeyProfiles.TabIndex = 12;
+            this.grpHotkeyProfiles.TabIndex = 13;
             this.grpHotkeyProfiles.TabStop = false;
             this.grpHotkeyProfiles.Text = "Hotkey Profiles";
             // 
@@ -500,10 +545,10 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel1.SetColumnSpan(this.btnCancel, 2);
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(302, 517);
+            this.btnCancel.Location = new System.Drawing.Point(302, 575);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
-            this.btnCancel.TabIndex = 7;
+            this.btnCancel.TabIndex = 1;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
@@ -519,29 +564,49 @@
             "MultiTwitch",
             "Kadgar",
             "Speedrun.tv"});
-            this.cbxRaceViewer.Location = new System.Drawing.Point(187, 431);
+            this.cbxRaceViewer.Location = new System.Drawing.Point(187, 460);
             this.cbxRaceViewer.Name = "cbxRaceViewer";
             this.cbxRaceViewer.Size = new System.Drawing.Size(190, 21);
-            this.cbxRaceViewer.TabIndex = 3;
+            this.cbxRaceViewer.TabIndex = 5;
             // 
             // label11
             // 
             this.label11.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(3, 435);
+            this.label11.Location = new System.Drawing.Point(3, 464);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(178, 13);
             this.label11.TabIndex = 15;
             this.label11.Text = "Race Viewer:";
             // 
+            // label12
+            // 
+            this.label12.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(3, 522);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(178, 13);
+            this.label12.TabIndex = 17;
+            this.label12.Text = "Active Comparisons:";
+            // 
+            // label13
+            // 
+            this.label13.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(3, 493);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(178, 13);
+            this.label13.TabIndex = 18;
+            this.label13.Text = "Racing Services:";
+            // 
             // btnChooseComparisons
             // 
             this.btnChooseComparisons.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel1.SetColumnSpan(this.btnChooseComparisons, 3);
-            this.btnChooseComparisons.Location = new System.Drawing.Point(187, 459);
+            this.btnChooseComparisons.Location = new System.Drawing.Point(187, 517);
             this.btnChooseComparisons.Name = "btnChooseComparisons";
             this.btnChooseComparisons.Size = new System.Drawing.Size(190, 23);
-            this.btnChooseComparisons.TabIndex = 4;
+            this.btnChooseComparisons.TabIndex = 7;
             this.btnChooseComparisons.Text = "Choose Active Comparisons...";
             this.btnChooseComparisons.UseVisualStyleBackColor = true;
             this.btnChooseComparisons.Click += new System.EventHandler(this.btnChooseComparisons_Click);
@@ -550,11 +615,11 @@
             // 
             this.chkSimpleSOB.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.chkSimpleSOB.AutoSize = true;
-            this.chkSimpleSOB.Location = new System.Drawing.Point(7, 404);
+            this.chkSimpleSOB.Location = new System.Drawing.Point(7, 433);
             this.chkSimpleSOB.Margin = new System.Windows.Forms.Padding(7, 3, 3, 3);
             this.chkSimpleSOB.Name = "chkSimpleSOB";
             this.chkSimpleSOB.Size = new System.Drawing.Size(174, 17);
-            this.chkSimpleSOB.TabIndex = 1;
+            this.chkSimpleSOB.TabIndex = 3;
             this.chkSimpleSOB.Text = "Simple Sum of Best Calculation";
             this.chkSimpleSOB.UseVisualStyleBackColor = true;
             this.chkSimpleSOB.CheckedChanged += new System.EventHandler(this.chkSimpleSOB_CheckedChanged);
@@ -564,51 +629,31 @@
             this.chkWarnOnReset.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.chkWarnOnReset.AutoSize = true;
             this.tableLayoutPanel1.SetColumnSpan(this.chkWarnOnReset, 3);
-            this.chkWarnOnReset.Location = new System.Drawing.Point(191, 404);
+            this.chkWarnOnReset.Location = new System.Drawing.Point(191, 433);
             this.chkWarnOnReset.Margin = new System.Windows.Forms.Padding(7, 3, 3, 3);
             this.chkWarnOnReset.Name = "chkWarnOnReset";
             this.chkWarnOnReset.Size = new System.Drawing.Size(186, 17);
-            this.chkWarnOnReset.TabIndex = 2;
+            this.chkWarnOnReset.TabIndex = 4;
             this.chkWarnOnReset.Text = "Warn On Reset If Better Times";
             this.chkWarnOnReset.UseVisualStyleBackColor = true;
             // 
-            // btnLogOut
+            // chkAllowGamepads
             // 
-            this.btnLogOut.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.tableLayoutPanel1.SetColumnSpan(this.btnLogOut, 3);
-            this.btnLogOut.Location = new System.Drawing.Point(187, 488);
-            this.btnLogOut.Name = "btnLogOut";
-            this.btnLogOut.Size = new System.Drawing.Size(190, 23);
-            this.btnLogOut.TabIndex = 5;
-            this.btnLogOut.Text = "Log Out of All Accounts";
-            this.btnLogOut.UseVisualStyleBackColor = true;
-            this.btnLogOut.Click += new System.EventHandler(this.btnLogOut_Click);
-            // 
-            // label5
-            // 
-            this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(3, 493);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(178, 13);
-            this.label5.TabIndex = 10;
-            this.label5.Text = "Saved Accounts:";
-            // 
-            // label12
-            // 
-            this.label12.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(3, 464);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(178, 13);
-            this.label12.TabIndex = 17;
-            this.label12.Text = "Active Comparisons:";
+            this.chkAllowGamepads.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
+            this.chkAllowGamepads.AutoSize = true;
+            this.chkAllowGamepads.Location = new System.Drawing.Point(7, 296);
+            this.chkAllowGamepads.Margin = new System.Windows.Forms.Padding(7, 3, 3, 3);
+            this.chkAllowGamepads.Name = "chkAllowGamepads";
+            this.chkAllowGamepads.Size = new System.Drawing.Size(168, 17);
+            this.chkAllowGamepads.TabIndex = 15;
+            this.chkAllowGamepads.Text = "Allow Gamepads as Hotkeys";
+            this.chkAllowGamepads.UseVisualStyleBackColor = true;
             // 
             // SettingsDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(394, 557);
+            this.ClientSize = new System.Drawing.Size(394, 615);
             this.Controls.Add(this.tableLayoutPanel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -670,5 +715,8 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Button btnLogOut;
         private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Button btnChooseRaceProvider;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.CheckBox chkAllowGamepads;
     }
 }

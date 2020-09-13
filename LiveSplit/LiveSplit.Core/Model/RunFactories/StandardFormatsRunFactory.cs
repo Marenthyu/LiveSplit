@@ -13,55 +13,10 @@ namespace LiveSplit.Model.RunFactories
 {
     public class StandardFormatsRunFactory : IRunFactory
     {
-        [DllImport("kernel32")]
-        private unsafe static extern void* LoadLibrary(string dllname);
-
-        [DllImport("kernel32")]
-        private unsafe static extern void FreeLibrary(void* handle);
-
-        private sealed unsafe class LibraryUnloader
-        {
-            internal LibraryUnloader(void* handle)
-            {
-                this.handle = handle;
-            }
-
-            ~LibraryUnloader()
-            {
-                if (handle != null)
-                    FreeLibrary(handle);
-            }
-
-            private void* handle;
-
-        } // LibraryUnloader
-
-        private static readonly LibraryUnloader unloader;
-
-        static StandardFormatsRunFactory()
-        {
-            string path;
-
-            if (IntPtr.Size == 4)
-                path = "x86/livesplit_core.dll";
-            else
-                path = "x64/livesplit_core.dll";
-
-            unsafe
-            {
-                void* handle = LoadLibrary(path);
-
-                if (handle == null)
-                    throw new DllNotFoundException("Unable to find the native livesplit-core library: " + path);
-
-                unloader = new LibraryUnloader(handle);
-            }
-        }
-
         public Stream Stream { get; set; }
         public string FilePath { get; set; }
 
-        public StandardFormatsRunFactory(Stream stream = null, string filePath = null)
+        public StandardFormatsRunFactory(Stream stream = null, string filePath = "")
         {
             Stream = stream;
             FilePath = filePath;
