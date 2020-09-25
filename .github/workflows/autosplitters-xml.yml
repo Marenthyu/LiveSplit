@@ -23,4 +23,4 @@ jobs:
           git config --global user.name "GitHub Action"
           git add .
           git commit -m "Update LiveSplit.AutoSplitters.xml" || true
-          git push https://action:${{ secrets.GITHUB_TOKEN }}@github.com/LiveSplit/LiveSplit.git
+          git push https://action:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
